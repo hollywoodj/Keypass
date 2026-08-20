@@ -1,6 +1,6 @@
 # Keypass
 
-Keypass is a local-first 1Password clone for **macOS** and **iOS**. It covers the 1Password 8 app: lock and unlock, vaults, item categories, search, favorites, tags, Watchtower, the password generator, Quick Access, and archive / recently deleted.
+Keypass is a local-first 1Password clone for **macOS**, **Windows**, and **iOS**. It covers the 1Password 8 app: lock and unlock, vaults, item categories, search, favorites, tags, Watchtower, the password generator, Quick Access, and archive / recently deleted.
 
 The vault is encrypted on device with your account password and Secret Key. There is no cloud sync, browser fill, or sharing — those are outside the 1Password app itself.
 
@@ -20,16 +20,17 @@ npm run typecheck
 npm test
 ```
 
-## macOS app
+## Desktop apps
 
 ```bash
-npm run electron:dev      # development
-npm run electron:build:mac
+npm run electron:dev          # development
+npm run electron:build:mac    # macOS .dmg
+npm run electron:build:win    # Windows .exe
 ```
 
 Installers are written to `release/`.
 
-Every push to `main` automatically cuts the next patch release and publishes a macOS `.dmg` on [GitHub Releases](https://github.com/hollywoodj/Keypass/releases). Include `[skip release]` in a commit message to skip. A specific version can be published from **Actions → Release → Run workflow**.
+Every push to `main` automatically cuts the next patch release and publishes Windows (`.exe`) and macOS (`.dmg`) installers on [GitHub Releases](https://github.com/hollywoodj/Keypass/releases). Include `[skip release]` in a commit message to skip. A specific version can be published from **Actions → Release → Run workflow**.
 
 ## What is in the app
 
@@ -42,7 +43,7 @@ Every push to `main` automatically cuts the next patch release and publishes a m
 | One-time passwords | ✅ |
 | Watchtower (weak, reused, HTTP, 2FA, expiry) | ✅ |
 | Password / memorable / PIN generator | ✅ |
-| Quick Access (`⇧⌘Space`) | ✅ |
+| Quick Access (`⇧⌘Space` / `Ctrl+Shift+Space`) | ✅ |
 | Archive and Recently Deleted | ✅ |
 | Light / Dark / System appearance | ✅ |
 | Auto-lock | ✅ |
@@ -50,21 +51,21 @@ Every push to `main` automatically cuts the next patch release and publishes a m
 | Browser Autofill / extensions | not in the app |
 | Account sharing / sync | not in the app |
 
-## Shortcuts (Mac)
+## Shortcuts
 
-| Shortcut | Action |
-| --- | --- |
-| ⌘N | New Item |
-| ⌘E | Edit |
-| ⌘S | Save |
-| ⌘F | Search |
-| ⌘C | Copy username |
-| ⇧⌘C | Copy password |
-| ⌥⌘C | Copy one-time password |
-| ⌘R | Reveal secure fields |
-| ⇧⌘L | Lock |
-| ⇧⌘Space | Quick Access |
-| ⇧⌘D | Show or hide sidebar |
-| ⌘, | Settings |
+| Action | Mac | Windows |
+| --- | --- | --- |
+| New Item | ⌘N | Ctrl+N |
+| Edit | ⌘E | Ctrl+E |
+| Save | ⌘S | Ctrl+S |
+| Search | ⌘F | Ctrl+F |
+| Copy username | ⌘C | Ctrl+C |
+| Copy password | ⇧⌘C | Ctrl+Shift+C |
+| Copy one-time password | ⌥⌘C | Ctrl+Alt+C |
+| Reveal secure fields | ⌘R | Ctrl+R |
+| Lock | ⇧⌘L | Ctrl+Shift+L |
+| Quick Access | ⇧⌘Space | Ctrl+Shift+Space |
+| Show or hide sidebar | ⇧⌘D | Ctrl+Shift+D |
+| Settings | ⌘, | Ctrl+, |
 
 Encrypted data is stored in the app’s local storage. If you forget the account password, the vault cannot be recovered.

@@ -80,6 +80,13 @@ function buildMenu(win) {
         { type: "separator" },
         { label: "Import…", click: () => send(win, { type: "import" }) },
         { label: "Export…", click: () => send(win, { type: "export" }) },
+        ...(!isMac
+          ? [
+              { type: "separator" },
+              { label: "Settings…", accelerator: "CommandOrControl+,", click: () => send(win, { type: "settings" }) },
+              { label: "Lock", accelerator: "Shift+CommandOrControl+L", click: () => send(win, { type: "lock" }) },
+            ]
+          : []),
         { type: "separator" },
         isMac ? { role: "close" } : { role: "quit" },
       ],
@@ -134,7 +141,10 @@ function buildMenu(win) {
     { role: "windowMenu" },
     {
       label: "Help",
-      submenu: [{ label: "Keyboard Shortcuts", accelerator: "CommandOrControl+/", click: () => send(win, { type: "shortcuts" }) }],
+      submenu: [
+        { label: "Keyboard Shortcuts", accelerator: "CommandOrControl+/", click: () => send(win, { type: "shortcuts" }) },
+        ...(!isMac ? [{ type: "separator" }, { role: "about" }] : []),
+      ],
     },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));

@@ -175,7 +175,7 @@ upload_assets() {
   shopt -s nullglob
   # latest.yml is the update feed electron-updater reads; without it an
   # installed app never learns a new release exists.
-  for file in "$DIST"/*.dmg "$DIST"/*.blockmap "$DIST"/*.yml; do
+  for file in "$DIST"/*.dmg "$DIST"/*.exe "$DIST"/*.blockmap "$DIST"/*.yml; do
     upload_one "$id" "$file"
   done
   log_assets "$id"
@@ -209,7 +209,7 @@ stage_artifacts() {
   while IFS= read -r -d '' file; do
     cp "$file" "$DIST/"
     found=1
-  done < <(find artifacts -type f \( -name '*.dmg' -o -name '*.blockmap' -o -name 'latest*.yml' \) -print0)
+  done < <(find artifacts -type f \( -name '*.dmg' -o -name '*.exe' -o -name '*.blockmap' -o -name 'latest*.yml' \) -print0)
 
   if [[ "$found" -eq 0 ]]; then
     echo "No installer files found under artifacts/." >&2

@@ -9,6 +9,7 @@ import { isActiveItem, itemLetter, itemSubtitle, type Database, type Settings, t
 import type { Theme } from "./theme";
 import { AppText, PillButton, SearchField, Segmented } from "./ui";
 import type { WatchtowerReport } from "./watchtower";
+import { shortcut } from "./platform";
 
 export function HomeScreen({
   theme,
@@ -373,7 +374,7 @@ export function QuickAccess({
           </Pressable>
         ))}
         <Text style={{ color: theme.textTertiary, fontSize: 11, padding: 12 }}>
-          ⇧⌘Space to close · ⌘C copy username · ⇧⌘C copy password · updated {formatWhen(Date.now())}
+          {shortcut("⇧⌘Space", "Ctrl+Shift+Space")} to close · {shortcut("⌘C", "Ctrl+C")} copy username · {shortcut("⇧⌘C", "Ctrl+Shift+C")} copy password · updated {formatWhen(Date.now())}
         </Text>
       </Pressable>
     </Pressable>

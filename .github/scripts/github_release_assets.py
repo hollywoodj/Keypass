@@ -47,12 +47,14 @@ def self_test() -> None:
     assert sanitize_asset_name("Keypass Setup 1.0.9.exe") == "Keypass.Setup.1.0.9.exe"
     assert sanitize_asset_name("Keypass.Setup.1.0.9.exe") == "Keypass.Setup.1.0.9.exe"
     assert sanitize_asset_name("Keypass Setup 1.0.9.exe.blockmap") == "Keypass.Setup.1.0.9.exe.blockmap"
+    assert sanitize_asset_name("Keypass-1.0.9-setup.exe") == "Keypass-1.0.9-setup.exe"
     assert sanitize_asset_name("Keypass-1.0.9-arm64.dmg") == "Keypass-1.0.9-arm64.dmg"
 
     assets = [
         {"id": 1, "name": "Keypass.Setup.1.0.9.exe", "size": 10},
         {"id": 2, "name": "Keypass.Setup.1.0.9.exe.blockmap", "size": 11},
         {"id": 3, "name": "Keypass-1.0.9-arm64.dmg", "size": 12},
+        {"id": 4, "name": "Keypass-1.0.9-setup.exe", "size": 13},
     ]
     exe = colliding_assets(assets, "Keypass Setup 1.0.9.exe")
     assert [asset["id"] for asset in exe] == [1], exe
@@ -60,6 +62,8 @@ def self_test() -> None:
     assert [asset["id"] for asset in blockmap] == [2], blockmap
     dmg = colliding_assets(assets, "Keypass-1.0.9-arm64.dmg")
     assert [asset["id"] for asset in dmg] == [3], dmg
+    setup = colliding_assets(assets, "Keypass-1.0.9-setup.exe")
+    assert [asset["id"] for asset in setup] == [4], setup
     log_assets(assets)
     print("self-test ok")
 

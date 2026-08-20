@@ -43,6 +43,7 @@ import { totpAt } from "./src/totp";
 import { AppText, PillButton, SearchField, Sheet, Toast } from "./src/ui";
 import { analyzeWatchtower } from "./src/watchtower";
 import type { MenuCommand } from "./src/commands";
+import { shortcut } from "./src/platform";
 
 type PhoneTab = "home" | "items" | "search" | "watchtower";
 
@@ -811,18 +812,18 @@ export default function App() {
       </Sheet>
       <Sheet visible={showShortcuts} onClose={() => setShowShortcuts(false)} theme={theme} title="Keyboard Shortcuts">
         {[
-          ["⌘N", "New Item"],
-          ["⌘E", "Edit"],
-          ["⌘S", "Save"],
-          ["⌘F", "Search"],
-          ["⌘C", "Copy username"],
-          ["⇧⌘C", "Copy password"],
-          ["⌥⌘C", "Copy one-time password"],
-          ["⌘R", "Reveal secure fields"],
-          ["⇧⌘L", "Lock"],
-          ["⇧⌘Space", "Quick Access"],
-          ["⇧⌘D", "Show or hide sidebar"],
-          ["⌘,", "Settings"],
+          [shortcut("⌘N", "Ctrl+N"), "New Item"],
+          [shortcut("⌘E", "Ctrl+E"), "Edit"],
+          [shortcut("⌘S", "Ctrl+S"), "Save"],
+          [shortcut("⌘F", "Ctrl+F"), "Search"],
+          [shortcut("⌘C", "Ctrl+C"), "Copy username"],
+          [shortcut("⇧⌘C", "Ctrl+Shift+C"), "Copy password"],
+          [shortcut("⌥⌘C", "Ctrl+Alt+C"), "Copy one-time password"],
+          [shortcut("⌘R", "Ctrl+R"), "Reveal secure fields"],
+          [shortcut("⇧⌘L", "Ctrl+Shift+L"), "Lock"],
+          [shortcut("⇧⌘Space", "Ctrl+Shift+Space"), "Quick Access"],
+          [shortcut("⇧⌘D", "Ctrl+Shift+D"), "Show or hide sidebar"],
+          [shortcut("⌘,", "Ctrl+,"), "Settings"],
         ].map(([key, label]) => (
           <View key={label} style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 8 }}>
             <Text style={{ color: theme.text }}>{label}</Text>
