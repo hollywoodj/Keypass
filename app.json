@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Keypass",
+    "slug": "keypass",
+    "scheme": "keypass",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0572EC"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.keypass.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Unlock Keypass with Face ID."
+      }
+    },
+    "android": {
+      "package": "com.keypass.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0572EC",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

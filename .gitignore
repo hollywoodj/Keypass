@@ -1,0 +1,16 @@
+node_modules
+.expo
+dist
+release
+web-build
+*.log
+.DS_Store
+.vscode
+.idea
+coverage
+*.tsbuildinfo
+.turbo
+.env
+.env.*
+npm-debug.log*
+.cache
