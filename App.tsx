@@ -3,7 +3,6 @@ import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Linking,
-  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -43,6 +42,7 @@ import { totpAt } from "./src/totp";
 import { AppText, PillButton, SearchField, Sheet, Toast } from "./src/ui";
 import { analyzeWatchtower } from "./src/watchtower";
 import type { MenuCommand } from "./src/commands";
+import { isTextEntryTarget } from "./src/keyboard";
 
 type PhoneTab = "home" | "items" | "search" | "watchtower";
 
@@ -349,13 +349,41 @@ export default function App() {
     if (typeof window === "undefined" || typeof window.addEventListener !== "function") return;
     const onKey = (event: KeyboardEvent) => {
       const meta = event.metaKey || event.ctrlKey;
+      const typing = isTextEntryTarget(event.target);
+      if (event.key === "Escape") {
+        if (showQuick) setShowQuick(false);
+        else if (largeType) setLargeType(null);
+        else if (showNew) setShowNew(false);
+        else if (showVaultPrompt) setShowVaultPrompt(false);
+        else if (showGenerator) setShowGenerator(false);
+        else if (showKit) setShowKit(false);
+        else if (showMore) setShowMore(false);
+        else if (showSettings) setShowSettings(false);
+        else if (showShortcuts) setShowShortcuts(false);
+        else if (draft) setDraft(null);
+        else if (query) setQuery("");
+        return;
+      }
       if (event.key === " " && event.shiftKey && meta) {
         event.preventDefault();
         handleCommand({ type: "quickAccess" });
-      } else if (event.key.toLowerCase() === "l" && event.shiftKey && meta) {
+        return;
+      }
+      if (event.key.toLowerCase() === "l" && event.shiftKey && meta) {
         event.preventDefault();
         handleCommand({ type: "lock" });
-      } else if (event.key.toLowerCase() === "n" && meta) {
+        return;
+      }
+      // Fields inside popups must keep characters, backspace, copy, and paste.
+      // 1Password leaves those keys alone while a text field is focused.
+      if (typing) {
+        if (event.key.toLowerCase() === "s" && meta && !event.shiftKey && !event.altKey) {
+          event.preventDefault();
+          handleCommand({ type: "save" });
+        }
+        return;
+      }
+      if (event.key.toLowerCase() === "n" && meta) {
         event.preventDefault();
         handleCommand({ type: "newItem" });
       } else if (event.key.toLowerCase() === "e" && meta) {
@@ -391,15 +419,9 @@ export default function App() {
       } else if (event.key === "/" && meta) {
         event.preventDefault();
         handleCommand({ type: "shortcuts" });
-      } else if (event.key === "Escape") {
-        if (showQuick) setShowQuick(false);
-        else if (draft) setDraft(null);
-        else if (query) setQuery("");
       } else if (event.key === "Backspace" && meta) {
         handleCommand({ type: "delete" });
       } else if (event.key === "Backspace" && !meta && !draft) {
-        const target = event.target as HTMLElement | null;
-        if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
         handleCommand({ type: "archive" });
       } else if (event.altKey && db.settings.holdOptionToReveal) {
         setRevealAll(true);
@@ -414,7 +436,7 @@ export default function App() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onUp);
     };
-  }, [db, draft, handleCommand, locked, query, showQuick]);
+  }, [db, draft, handleCommand, largeType, locked, query, showGenerator, showKit, showMore, showNew, showQuick, showSettings, showShortcuts, showVaultPrompt]);
 
   const onUnlock = async (value: string) => {
     setBusy(true);
@@ -831,13 +853,13 @@ export default function App() {
         ))}
       </Sheet>
       <Sheet visible={showVaultPrompt} onClose={() => setShowVaultPrompt(false)} theme={theme} title="New Vault" width={400}>
-        <TextInput value={vaultName} onChangeText={setVaultName} placeholder="Vault name" placeholderTextColor={theme.textTertiary} style={{ backgroundColor: theme.fieldBg, borderRadius: 10, padding: 12, color: theme.text }} />
+        <TextInput value={vaultName} onChangeText={setVaultName} autoFocus placeholder="Vault name" placeholderTextColor={theme.textTertiary} style={{ backgroundColor: theme.fieldBg, borderRadius: 10, padding: 12, color: theme.text }} />
         <View style={{ marginTop: 14, alignItems: "flex-end" }}>
           <PillButton label="Create" theme={theme} primary onPress={createVault} disabled={!vaultName.trim()} />
         </View>
       </Sheet>
 
-      <Modal visible={showQuick} transparent animationType="fade" onRequestClose={() => setShowQuick(false)}>
+      {showQuick ? (
         <QuickAccess
           theme={theme}
           items={db.items}
@@ -850,10 +872,8 @@ export default function App() {
           onCopyUser={(item) => copyText(usernameOf(item), "username")}
           onCopyPassword={(item) => copyText(passwordOf(item), "password")}
         />
-      </Modal>
-      <Modal visible={!!largeType} transparent animationType="fade" onRequestClose={() => setLargeType(null)}>
-        {largeType ? <LargeType value={largeType} onClose={() => setLargeType(null)} theme={theme} /> : null}
-      </Modal>
+      ) : null}
+      {largeType ? <LargeType value={largeType} onClose={() => setLargeType(null)} theme={theme} /> : null}
     </SafeAreaView>
   );
 }

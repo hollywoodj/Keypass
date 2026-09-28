@@ -13,6 +13,7 @@ import {
   sortItems,
   type VaultItem,
 } from "./model.ts";
+import { isTextEntryTarget } from "./keyboard.ts";
 import { formatTotp, parseTotpSecret, totpAt } from "./totp.ts";
 import { analyzeWatchtower } from "./watchtower.ts";
 
@@ -149,6 +150,15 @@ test("Watchtower finds reused, weak, http, missing 2FA, and expiring cards", () 
   assert.ok(ids.expiring?.includes("Amex"));
   assert.ok(!ids.expiring?.includes("Visa"));
   assert.ok(report.issueCount >= 3);
+});
+
+test("popup text fields keep keystrokes instead of shortcut handling", () => {
+  assert.equal(isTextEntryTarget({ tagName: "INPUT" }), true);
+  assert.equal(isTextEntryTarget({ tagName: "textarea" }), true);
+  assert.equal(isTextEntryTarget({ tagName: "input", readOnly: true }), false);
+  assert.equal(isTextEntryTarget({ tagName: "DIV", isContentEditable: true }), true);
+  assert.equal(isTextEntryTarget({ tagName: "DIV" }), false);
+  assert.equal(isTextEntryTarget(null), false);
 });
 
 test("duplicate item gets a new id and drops favorite/trash state", () => {

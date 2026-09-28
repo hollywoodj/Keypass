@@ -7,7 +7,7 @@ import { clickable, ItemBadge } from "./icons";
 import { formatWhen } from "./items";
 import { isActiveItem, itemLetter, itemSubtitle, type Database, type Settings, type VaultItem } from "./model";
 import type { Theme } from "./theme";
-import { AppText, PillButton, SearchField, Segmented } from "./ui";
+import { AppText, Overlay, PillButton, SearchField, Segmented } from "./ui";
 import type { WatchtowerReport } from "./watchtower";
 
 export function HomeScreen({
@@ -342,11 +342,8 @@ export function QuickAccess({
   const current = filtered[index] ?? filtered[0];
 
   return (
-    <Pressable onPress={onClose} style={{ flex: 1, backgroundColor: theme.overlay, alignItems: "center", paddingTop: 80 }}>
-      <Pressable
-        onPress={() => undefined}
-        style={{ width: "92%", maxWidth: 560, backgroundColor: theme.card, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: theme.border }}
-      >
+    <Overlay onClose={onClose} theme={theme} placement="top">
+      <View style={{ width: "92%", maxWidth: 560, backgroundColor: theme.card, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: theme.border, zIndex: 1 }}>
         <View style={{ padding: 12 }}>
           <SearchField theme={theme} value={query} onChange={(value) => { setQuery(value); setIndex(0); }} placeholder="Quick Access" autoFocus />
         </View>
@@ -375,8 +372,8 @@ export function QuickAccess({
         <Text style={{ color: theme.textTertiary, fontSize: 11, padding: 12 }}>
           ⇧⌘Space to close · ⌘C copy username · ⇧⌘C copy password · updated {formatWhen(Date.now())}
         </Text>
-      </Pressable>
-    </Pressable>
+      </View>
+    </Overlay>
   );
 }
 
