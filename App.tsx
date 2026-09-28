@@ -430,10 +430,12 @@ export default function App() {
     const onUp = (event: KeyboardEvent) => {
       if (event.key === "Alt" && db.settings.holdOptionToReveal) setRevealAll(false);
     };
-    window.addEventListener("keydown", onKey);
+    // Capture so shortcuts still run while a popup field is focused. Text fields
+    // stop keydown from bubbling, which previously left Escape and Quick Access stuck.
+    window.addEventListener("keydown", onKey, true);
     window.addEventListener("keyup", onUp);
     return () => {
-      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keydown", onKey, true);
       window.removeEventListener("keyup", onUp);
     };
   }, [db, draft, handleCommand, largeType, locked, query, showGenerator, showKit, showMore, showNew, showQuick, showSettings, showShortcuts, showVaultPrompt]);
