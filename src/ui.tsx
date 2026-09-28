@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Animated,
-  Modal,
+  BackHandler,
   Platform,
   Pressable,
   ScrollView,
@@ -134,6 +134,20 @@ export function SearchField({
   autoFocus?: boolean;
   onSubmit?: () => void;
 }) {
+  const inputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    if (!autoFocus) return;
+    // Popups used to leave focus on the dismiss layer. Put it on the field
+    // after layout so typing works as soon as the popup is visible.
+    const focus = () => inputRef.current?.focus();
+    const frame = requestAnimationFrame(focus);
+    const timer = setTimeout(focus, 50);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [autoFocus]);
+
   return (
     <View
       style={{
@@ -148,6 +162,7 @@ export function SearchField({
     >
       <Ionicons name="search" size={14} color={theme.textTertiary} />
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
@@ -204,6 +219,65 @@ export function Toast({ message, theme }: { message: string | null; theme: Theme
   );
 }
 
+export function Overlay({
+  onClose,
+  theme,
+  children,
+  placement = "center",
+}: {
+  onClose: () => void;
+  theme: Theme;
+  children: React.ReactNode;
+  placement?: "center" | "top";
+}) {
+  const rootRef = useRef<View>(null);
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      onClose();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [onClose]);
+
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return;
+    const active = document.activeElement;
+    const root = rootRef.current as unknown as { contains?: (node: unknown) => boolean } | null;
+    if (active && root?.contains?.(active)) return;
+    (active as { blur?: () => void } | null)?.blur?.();
+  }, []);
+
+  return (
+    <View
+      ref={rootRef}
+      accessibilityViewIsModal
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 40,
+        alignItems: "center",
+        justifyContent: placement === "center" ? "center" : "flex-start",
+        paddingHorizontal: 24,
+        paddingTop: placement === "top" ? 80 : 24,
+        paddingBottom: 24,
+      }}
+    >
+      <Pressable
+        accessibilityLabel="Dismiss"
+        accessibilityRole="button"
+        onPress={onClose}
+        tabIndex={-1}
+        style={[StyleSheet.absoluteFill, { backgroundColor: theme.overlay, zIndex: 0 }]}
+      />
+      {children}
+    </View>
+  );
+}
+
 export function Sheet({
   visible,
   onClose,
@@ -219,37 +293,35 @@ export function Sheet({
   width?: number;
   title?: string;
 }) {
+  if (!visible) return null;
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable
-        onPress={onClose}
-        style={{ flex: 1, backgroundColor: theme.overlay, alignItems: "center", justifyContent: "center", padding: 24 }}
+    <Overlay onClose={onClose} theme={theme}>
+      <View
+        style={{
+          width: "100%",
+          maxWidth: width,
+          maxHeight: "90%",
+          backgroundColor: theme.card,
+          borderRadius: 14,
+          overflow: "hidden",
+          borderWidth: StyleSheet.hairlineWidth,
+          borderColor: theme.border,
+          zIndex: 1,
+        }}
       >
-        <Pressable
-          onPress={() => undefined}
-          style={{
-            width: "100%",
-            maxWidth: width,
-            maxHeight: "90%",
-            backgroundColor: theme.card,
-            borderRadius: 14,
-            overflow: "hidden",
-            borderWidth: StyleSheet.hairlineWidth,
-            borderColor: theme.border,
-          }}
-        >
-          {title ? (
-            <View style={{ paddingHorizontal: 18, paddingTop: 16, paddingBottom: 8, flexDirection: "row", justifyContent: "space-between" }}>
-              <AppText theme={theme} size={17} weight="700">
-                {title}
-              </AppText>
-              <IconButton name="close" theme={theme} onPress={onClose} />
-            </View>
-          ) : null}
-          <ScrollView contentContainerStyle={{ padding: 18 }}>{children}</ScrollView>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        {title ? (
+          <View style={{ paddingHorizontal: 18, paddingTop: 16, paddingBottom: 8, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <AppText theme={theme} size={17} weight="700">
+              {title}
+            </AppText>
+            <IconButton name="close" theme={theme} onPress={onClose} />
+          </View>
+        ) : null}
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 18 }}>
+          {children}
+        </ScrollView>
+      </View>
+    </Overlay>
   );
 }
 

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { CATEGORIES, categoryMeta, newItem } from "./categories";
 import { clickable, font, Hairline, ItemBadge } from "./icons";
@@ -691,8 +691,26 @@ export function formatWhen(ts: number): string {
 }
 
 export function LargeType({ value, onClose, theme }: { value: string; onClose: () => void; theme: Theme }) {
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return;
+    (document.activeElement as { blur?: () => void } | null)?.blur?.();
+  }, []);
   return (
-    <Pressable onPress={onClose} style={{ flex: 1, backgroundColor: "#000", alignItems: "center", justifyContent: "center", padding: 24 }}>
+    <Pressable
+      onPress={onClose}
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 40,
+        backgroundColor: "#000",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+      }}
+    >
       <Text style={{ color: "#fff", fontSize: value.length > 24 ? 36 : 64, fontWeight: "700", textAlign: "center" }}>{value}</Text>
       <Text style={{ color: "#8E8E93", marginTop: 24 }}>Click to close</Text>
     </Pressable>
